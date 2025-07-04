@@ -108,17 +108,98 @@ fn alia() {
     println!("tinggi : {}", profile.2);
 }
 
+fn koordinat() -> (i32, i32) {
+    (30, 50)          // ← tidak pakai `return`
+}
+
+
+//konversi detik
+use std::io;
+
+// --------- FUNGSI ---------
+fn konversi_detik(total: u32) -> (u32, u32, u32) {
+    let jam    = total / 3600;          // 1 jam = 3600 detik
+    let sisa   = total % 3600;
+    let menit  = sisa / 60;
+    let detik  = sisa % 60;
+
+    (jam, menit, detik)                 // <- tuple sebagai return value
+}
+
+fn hitung_nilai_mhs(){
+        // 1. Buat vector tuple siswa
+        let siswa = vec![
+            ("Ali".to_string(), 85),
+            ("Budi".to_string(), 60),
+            ("Citra".to_string(), 90),
+            ("Dina".to_string(), 45),
+            ("gugun".to_string(), 99),
+            ("gugun".to_string(), 44),
+        ];
+    
+        // 2. Tampilkan semua data
+        println!("Daftar Siswa:");
+        for (nama, nilai) in &siswa {
+            println!("- {}: {}", nama, nilai);
+        }
+    
+        // 3. Tampilkan yang lulus (nilai >= 70)
+        println!("\n Yang Lulus:");
+        for (nama, nilai) in &siswa {
+            if *nilai >= 70 {
+                println!("- {}: {}", nama, nilai);
+            }
+        }
+
+        // 4. Tampilkan yang tidak lulus (nilai <= 70)
+        println!("\n Yang Tidak Lulus:");
+        for (nama, nilai) in &siswa {
+            if *nilai <= 70 {
+                println!("- {}: {}", nama, nilai);
+            }
+        }
+    
+        // nilai tertinggi
+        if let Some((nama_top, nilai_top)) = siswa.iter().max_by_key(|(_, n)| n) {
+            println!("\n🏅 Nilai tertinggi: {} ({})", nama_top, nilai_top);
+        }
+
+        // 4. Hitung rata-rata nilai
+        let total: u32 = siswa.iter().map(|(_, n)| n).sum();
+        let rata2 = total as f32 / siswa.len() as f32;
+        println!("\n Rata-rata nilai: {:.2}", rata2);
+}
+
+
 
 
 fn main() {
-    tampilkan_profil("Rustacean", 28);
-    println!();
-    hitung_kelipatan(7);
-    cocok();
-    apalah();
-    nilai_match();
-    ssss();
-    alia();
+    //tampilkan_profil("Rustacean", 28);
+    //println!();
+    //hitung_kelipatan(7);
+    //cocok();
+    //apalah();
+    //nilai_match();
+    //ssss();
+    ////////////////////////// konversi detik ////////////////////////////////////////////////
+    // println!("Masukkan total detik:");
+
+    // // baca input user
+    // let mut input = String::new();
+    // io::stdin().read_line(&mut input).unwrap();
+    // let total: u32 = input.trim().parse().expect("Harus angka positif!");
+
+    // // panggil fungsi dan 'bongkar' tuple
+    // let (jam, menit, detik) = konversi_detik(total);
+
+    // println!("{total} detik = {jam} jam {menit} menit {detik} detik");
+////////////////////////////////////////////////////////////////////////
+    // alia();
+    // let (x, y) = koordinat();
+    // println!("x = {x}, y = {y}");
+
+    hitung_nilai_mhs()
+
 }
 
 
