@@ -1,5 +1,14 @@
 [
-    { "id": 1, "name": "Nasi Goreng" },
-    { "id": 2, "name": "Sate Ayam" }
-  ]
-  
+  {
+    "id": 1,
+    "name": "Nasi Goreng"
+  },
+  {
+    "id": 2,
+    "name": "Sate Ayam"
+  },
+  {
+    "id": 3,
+    "name": "Cendol Dawet"
+  }
+]

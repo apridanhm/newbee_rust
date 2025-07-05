@@ -24,8 +24,6 @@ fn load_items() -> Vec<Item> {
 }
 
 fn save_items(items: &Vec<Item>) {
-    // Untuk demo, pakai penulisan sinkron blocking.
-    // Pada aplikasi besar gunakan tokio::fs + web::block.
     if let Ok(json) = serde_json::to_string_pretty(items) {
         let _ = fs::write(DATA_FILE, json);
     }
@@ -53,14 +51,13 @@ async fn get_item(path: web::Path<u32>, data: web::Data<AppState>) -> impl Respo
 async fn create(new_item: web::Json<Item>, data: web::Data<AppState>) -> impl Responder {
     let mut items = data.items.lock().unwrap();
 
-    // ‑‑ contoh validasi sederhana: id unik
     if items.iter().any(|it| it.id == new_item.id) {
         return HttpResponse::BadRequest().body("ID already exists");
     }
 
     items.push(new_item.into_inner());
     save_items(&items);
-    HttpResponse::Created().finish()
+    HttpResponse::Created().body("Item created")
 }
 
 #[put("/items/{id}")]
@@ -75,7 +72,7 @@ async fn update(
         Some(slot) => {
             *slot = new_item.into_inner();
             save_items(&items);
-            HttpResponse::Ok().finish()
+            HttpResponse::Ok().body("Item updated")
         }
         None => HttpResponse::NotFound().body("Not found"),
     }
@@ -95,10 +92,19 @@ async fn delete_item(path: web::Path<u32>, data: web::Data<AppState>) -> impl Re
     }
 }
 
+#[post("/reload")]
+async fn reload_data(data: web::Data<AppState>) -> impl Responder {
+    let mut items = data.items.lock().unwrap();
+    *items = load_items(); // replace dari file
+    HttpResponse::Ok().body("Reloaded from data.json")
+}
+
 /* ---------- main ---------- */
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("🚀 Server running on http://0.0.0.0:8080");
+
     HttpServer::new(|| {
         App::new()
             .app_data(web::Data::new(AppState {
@@ -109,8 +115,9 @@ async fn main() -> std::io::Result<()> {
             .service(create)
             .service(update)
             .service(delete_item)
+            .service(reload_data)
     })
-    .bind(("0.0.0.0", 8080))?   // akses via 10.4.0.111
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
